@@ -5,6 +5,7 @@ import com.dsoft.dto.*;
 import com.dsoft.dto.coursedto.CourseResponse;
 import com.dsoft.dto.studentdto.StudentResponse;
 import com.dsoft.dto.userdto.RegisterRequest;
+import com.dsoft.dto.userdto.ResetPasswordRequest;
 import com.dsoft.dto.userdto.UserResponse;
 import com.dsoft.enums.StudentStatus;
 import com.dsoft.service.CourseService;
@@ -16,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -210,4 +212,25 @@ public class AdminController {
     }
 
 
+
+
+
+    @PatchMapping("/users/{id}/reset-password")
+    public ResponseEntity<ResponseApi<Void>> resetPassword(
+            @PathVariable Long id,
+            @RequestBody ResetPasswordRequest request) {
+
+        userService.resetPassword(id, request);
+
+        return ResponseEntity.ok(
+                ResponseApi.<Void>builder()
+                        .success(true)
+                        .status(HttpStatus.OK.value())
+                        .message("Password reset successfully.")
+                        .data(null)
+                        .timeStamp(LocalTime.now())
+                        .build());
+    }
+
 }
+

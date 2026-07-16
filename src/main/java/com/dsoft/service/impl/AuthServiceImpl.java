@@ -1,5 +1,6 @@
 package com.dsoft.service.impl;
 
+import com.dsoft.dto.userdto.ChangePasswordRequest;
 import com.dsoft.security.JwtService;
 import com.dsoft.dto.AuthResponse;
 import com.dsoft.dto.userdto.LoginRequest;
@@ -12,6 +13,8 @@ import com.dsoft.error.ResourceNotFoundException;
 import com.dsoft.repository.UserRepository;
 import com.dsoft.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -67,5 +70,25 @@ public class AuthServiceImpl implements AuthService {
                 .email(user.getEmail())
                 .role(user.getRole().name())
                 .build();
+    }
+
+    @Override
+    public void changePassword(ChangePasswordRequest request) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        String email = authentication.getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("User not found"));
+
+        if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
+            throw new BadRequestException("Old password is incorrect");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+
+        userRepository.save(user);
     }
 }

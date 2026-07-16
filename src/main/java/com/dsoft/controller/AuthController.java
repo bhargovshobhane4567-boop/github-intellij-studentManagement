@@ -1,6 +1,7 @@
 package com.dsoft.controller;
 
 import com.dsoft.dto.AuthResponse;
+import com.dsoft.dto.userdto.ChangePasswordRequest;
 import com.dsoft.dto.userdto.LoginRequest;
 import com.dsoft.dto.userdto.RegisterRequest;
 import com.dsoft.dto.ResponseApi;
@@ -9,10 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalTime;
 
@@ -57,4 +55,24 @@ public class AuthController {
     }
 
 
+    @PatchMapping("/change-password")
+    public ResponseEntity<ResponseApi<Void>> changePassword(
+            @Valid @RequestBody ChangePasswordRequest request) {
+
+        authService.changePassword(request);
+
+        ResponseApi<Void> response = ResponseApi.<Void>builder()
+                .success(true)
+                .status(HttpStatus.OK.value())
+                .message("Password changed successfully.")
+                .data(null)
+                .timeStamp(LocalTime.now())
+                .build();
+
+        return ResponseEntity.ok(response);
+    }
 }
+
+
+
+

@@ -1,6 +1,7 @@
 package com.dsoft.service.impl;
 
 import com.dsoft.dto.userdto.RegisterRequest;
+import com.dsoft.dto.userdto.ResetPasswordRequest;
 import com.dsoft.dto.userdto.UserResponse;
 import com.dsoft.entity.User;
 import com.dsoft.error.ResourceAlreadyExistsException;
@@ -86,6 +87,16 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    @Override
+    public void resetPassword(Long userId, ResetPasswordRequest request) {
+
+         User user =   userRepository.findByIdAndDeletedFalse(userId)
+                     .orElseThrow(()-> new ResourceNotFoundException("User not found with id: " + userId ));
+
+         user.setPassword(request.getNewPassword());
+
+         userRepository.save(user);
+    }
 
 
     // Mapper Method
